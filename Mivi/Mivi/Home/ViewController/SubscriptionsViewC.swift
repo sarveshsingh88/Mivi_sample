@@ -1,0 +1,73 @@
+//
+//  SubscriptionsViewC.swift
+//  Mivi
+//
+//  Created by Talentedge on 17/08/18.
+//  Copyright © 2018 Sample. All rights reserved.
+//
+
+import UIKit
+
+class SubscriptionsViewC: UIViewController {
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    var subscriptions = [Subscription]()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.title = "Subscription"
+        self.navigationController?.isNavigationBarHidden = false
+        
+        if let servicesArr = DataParser.subscriptionsModels() {
+            self.subscriptions.append(contentsOf: servicesArr)
+            // TableView Setup
+            self.tableView.registerMultiple(nibs: [SubscriptionTVCell.className])
+            self.tableView.estimatedRowHeight = 100
+            self.tableView.rowHeight = UITableViewAutomaticDimension
+            self.tableView.reloadData()
+        }
+        // Do any additional setup after loading the view.
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+}
+
+extension SubscriptionsViewC: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return subscriptions.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        return self.cellForIdentifier(SubscriptionTVCell.className, indexPath: indexPath, tableView)
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+}
+
+extension SubscriptionsViewC {
+    
+    func cellForIdentifier(_ identifier: String, indexPath: IndexPath, _ tableView: UITableView) -> UITableViewCell {
+        
+        switch identifier {
+        case SubscriptionTVCell.className:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionTVCell.className, for: indexPath) as? SubscriptionTVCell {
+                let data = subscriptions[indexPath.row]
+                cell.configureWith(subscription: data)
+                return cell
+            }
+            return UITableViewCell()
+        default:
+            return UITableViewCell()
+        }
+    }
+}
